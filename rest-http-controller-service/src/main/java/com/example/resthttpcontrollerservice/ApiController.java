@@ -1,7 +1,7 @@
 package com.example.resthttpcontrollerservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -22,8 +22,37 @@ public class ApiController {
         return restTemplate.postForEntity("lb://database-service/tasks", request, Object.class);
     }
 
-    @GetMapping(params = {"!sort", "!page", "!size", "!description", "!deadline", "!state", "!deadlineTimeStart", "!deadlineBefore" })
-    ResponseEntity<?> readAllTasks() {
+    @GetMapping
+    ResponseEntity<?> readAllTasks(@RequestParam(value = "sort", required = false) String sort,
+                                   @RequestParam(value = "description", required = false) String description,
+                                   @RequestParam(value = "done", required = false) String done,
+                                   @RequestParam(value = "page", required = false) String page,
+                                   @RequestParam(value = "size", required = false) String size) {
+        if(sort != null){
+            return restTemplate.getForEntity("lb://database-service/tasks?sort={sort}", Object.class, sort);
+        }
+        if(description != null){
+            return restTemplate.getForEntity("lb://database-service/tasks?description={description}", Object.class, description);
+        }
+        if(done != null){
+            return restTemplate.getForEntity("lb://database-service/tasks?done={done}", Object.class, done);
+        }
+        if(page != null && (size == null)){
+            return restTemplate.getForEntity("lb://database-service/tasks?pageNumber={page}", Object.class, page);
+        }
+
+        if(size != null && (page == null)){
+            return restTemplate.getForEntity("lb://database-service/tasks?pageSize={size}", Object.class, size);
+        }
+
+        if((page != null)) {
+            String url = "http://database-service/tasks";
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
+                    .queryParam("pageNumber", page)
+                    .queryParam("pageSize",size);
+            return restTemplate.getForEntity(builder.toUriString(), Object.class);
+        }
+
         return restTemplate.getForEntity("lb://database-service/tasks", Object.class);
     }
 
@@ -40,49 +69,6 @@ public class ApiController {
     @DeleteMapping("/{id}")
     void deleteTask(@PathVariable int id) {
         restTemplate.delete("lb://database-service/tasks/{id}", id);
-    }
-
-    @GetMapping(params = {"!sort", "!page", "!size", "!deadline", "!state" })
-    ResponseEntity<?> findTasksByDescription(@RequestParam String description) {
-        return restTemplate.getForEntity("lb://database-service/tasks?description={description}", Object.class, description);
-    }
-
-    @GetMapping(params = {"!sort", "!page", "!size", "!description", "!deadline"})
-    ResponseEntity<?> findTasksByState(@RequestParam String state) {
-        return restTemplate.getForEntity("lb://database-service/tasks?state={state}", Object.class, state);
-    }
-
-    @GetMapping(params = {"!sort", "!page", "!size", "!description", "!state" })
-    ResponseEntity<?> findTasksByDeadline(@RequestParam String deadline) {
-        return restTemplate.getForEntity("lb://database-service/tasks?deadline={deadline}", Object.class, deadline);
-    }
-
-    @GetMapping(params = {"!sort", "!page", "!size", "!description", "!state", "!deadline", "!deadlineTimeStart"})
-    ResponseEntity<?> findTasksWithDeadlineBefore(@RequestParam String deadlineBefore) {
-        return restTemplate.getForEntity("lb://database-service/tasks?deadlineBefore={deadlineBefore}", Object.class, deadlineBefore);
-    }
-
-    @GetMapping(params = {"!description", "!state", "!deadline", "!deadlineTimeStart"})
-    ResponseEntity<?> pagingAllTasks(@RequestParam int page, @RequestParam int size) {
-        String url = "http://database-service/tasks";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
-                .queryParam("page", page)
-                .queryParam("size",size);
-        return restTemplate.getForEntity(builder.toUriString(), Object.class);
-    }
-
-    @GetMapping(params = {"!sort", "!page", "!size", "!description", "!state", "!deadline"})
-    ResponseEntity<?> findTasksByDeadlineBetween(@RequestParam String deadlineTimeStart, @RequestParam String deadlineTimeEnd) {
-        String url = "http://database-service/tasks";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
-                .queryParam("deadlineTimeStart", deadlineTimeStart)
-                .queryParam("deadlineTimeEnd",deadlineTimeEnd);
-        return restTemplate.getForEntity(builder.toUriString(), Object.class);
-    }
-
-    @GetMapping(params = {"!description", "!state", "!deadline", "!deadlineTimeStart","!page", "!size"})
-    ResponseEntity<?> sortAllTasks(@RequestParam String sort) {
-        return restTemplate.getForEntity("lb://database-service/tasks?sort={sort}", Object.class, sort);
     }
 
 }

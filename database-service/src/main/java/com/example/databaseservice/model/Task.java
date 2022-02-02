@@ -2,7 +2,7 @@ package com.example.databaseservice.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "tasks")
@@ -13,12 +13,12 @@ public class Task {
     @NotBlank
     private String description;
     private boolean done;
-    private LocalDateTime deadline;
+    private Instant deadline;
 
     public Task() {
     }
 
-    public Task(int id, String description, boolean done, LocalDateTime deadline) {
+    public Task(int id, String description, boolean done, Instant deadline) {
         this.id = id;
         this.description = description;
         this.done = done;
@@ -49,11 +49,11 @@ public class Task {
         this.done = done;
     }
 
-    public LocalDateTime getDeadline() {
+    public Instant getDeadline() {
         return deadline;
     }
 
-    void setDeadline(LocalDateTime deadline) {
+    public void setDeadline(Instant deadline) {
         this.deadline = deadline;
     }
 
