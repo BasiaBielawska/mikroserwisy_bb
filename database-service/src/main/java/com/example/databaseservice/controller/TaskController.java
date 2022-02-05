@@ -1,13 +1,13 @@
 package com.example.databaseservice.controller;
 
 import com.example.databaseservice.model.Task;
-import com.example.databaseservice.model.TaskPage;
 import com.example.databaseservice.model.TaskSearchCriteria;
 import com.example.databaseservice.repository.TaskCriteriaRepository;
 import com.example.databaseservice.repository.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +38,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Task>> readAllTasks(TaskPage taskPage, TaskSearchCriteria taskSearchCriteria){
-        return new ResponseEntity<>(taskCriteriaRepository.findAllWithFilters(taskPage, taskSearchCriteria), HttpStatus.OK);
+    ResponseEntity<Page<Task>> readAllTasks(TaskSearchCriteria taskSearchCriteria, Pageable page) {
+        return new ResponseEntity<>(taskCriteriaRepository.findAllWithFilters(taskSearchCriteria, page), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

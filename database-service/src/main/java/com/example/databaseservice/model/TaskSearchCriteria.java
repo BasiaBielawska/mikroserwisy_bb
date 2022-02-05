@@ -6,7 +6,9 @@ public class TaskSearchCriteria {
 
     private String description;
     private boolean done;
-    private Instant deadline;
+    private Instant deadlineFrom;
+    private Instant deadlineTo;
+
 
     public String getDescription() {
         return description;
@@ -24,11 +26,19 @@ public class TaskSearchCriteria {
         this.done = done;
     }
 
-    public Instant getDeadline() {
-        return deadline;
+    public Instant getDeadlineFrom() {
+        return deadlineFrom;
     }
 
-    public void setDeadline(Instant deadline) {
-        this.deadline = deadline;
+    public void setDeadlineFrom(Instant deadlineFrom) {
+        this.deadlineFrom = deadlineFrom;
+    }
+
+    public Instant getDeadlineTo() {
+        return deadlineTo;
+    }
+
+    public void setDeadlineTo(Instant deadlineTo) {
+        this.deadlineTo = deadlineTo;
     }
 }
